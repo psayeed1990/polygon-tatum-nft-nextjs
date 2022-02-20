@@ -58,13 +58,12 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                <Menus />
                 {metaMaskInstalled ? (
                     <>
                         {account && <h1 className={styles.title}>{account}</h1>}
 
                         <Image
-                            src="/qoddi.jpg"
+                            src="https://ipfs.io/ipfs/bafkreidahjp3fnwpu2zvydvy4imm7wktwy2a4a3ypjxno3hdwn4x5iao3e"
                             width={300}
                             height="100"
                             alt="Qoddi Logo"
