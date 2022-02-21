@@ -5,46 +5,69 @@ import Menus from "../components/Menus";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
+    const [message, setMessage] = useState("");
     const [account, setAccount] = useState(null);
     const [metaMaskInstalled, setMetaMaskInstalled] = useState(false);
-    const enableMetaMask = () => {
-        const { ethereum } = window;
-        //If MetaMask is installed, then we can get the accounts
-        const getAccounts = async () => {
-            //const accounts = await ethereum.enable();
-            const accounts = await ethereum.request({
-                method: "eth_requestAccounts",
-            });
-            setAccount(accounts[0]);
-        };
-
-        getAccounts();
-    };
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            //Have to check the ethereum binding on the window object to see if it's installed
-            const { ethereum } = window;
-            console.log(
-                "metamask installed - ",
-                Boolean(ethereum && ethereum.isMetaMask)
-            );
-            if (Boolean(ethereum && ethereum.isMetaMask)) {
-                //const accounts = ethereum.enable();
-                const getAccounts = async () => {
-                    //const accounts = await ethereum.enable();
+        const getAccounts = async () => {
+            if (typeof window !== "undefined") {
+                //Have to check the ethereum binding on the window object to see if it's installed
+                const { ethereum } = window;
+
+                if (Boolean(ethereum && ethereum.isMetaMask)) {
+                    //const accounts = ethereum.enable();
+
                     const accounts = await ethereum.request({
                         method: "eth_requestAccounts",
                     });
                     setAccount(accounts[0]);
-                };
-                getAccounts;
-                setMetaMaskInstalled(true);
-            } else {
-                setMetaMaskInstalled(false);
+
+                    setMetaMaskInstalled(true);
+                } else {
+                    setMetaMaskInstalled(false);
+                }
             }
+        };
+        getAccounts();
+    }, []);
+
+    const connectMetamask = async () => {
+        const { ethereum } = window;
+        //If MetaMask is installed, then we can get the accounts
+
+        //const accounts = await ethereum.enable();
+        const accounts = await ethereum.request({
+            method: "eth_requestAccounts",
+        });
+        setAccount(accounts[0]);
+    };
+
+    const mintNFT = async () => {
+        try {
+            const response = await fetch(
+                "http://carpulqbzm.us10.qoddiapp.com/mint-nft",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        account,
+                    }),
+                }
+            );
+            const data = await response.json();
+            setToken(data.txId);
+            setMessage(
+                `Minted NFT with token ID: ${data.txId}, account: ${account}`
+            );
+            console.log(data);
+        } catch (e) {
+            console.log(e);
         }
-    }, [account]);
+    };
 
     return (
         <div className={styles.container}>
@@ -58,26 +81,36 @@ export default function Home() {
             </Head>
 
             <main className={styles.main}>
-                {metaMaskInstalled ? (
+                {token ? (
+                    <div>
+                        <h1 className={styles.title}>{messgae}</h1>
+                    </div>
+                ) : metaMaskInstalled ? (
                     <>
-                        {account && <h1 className={styles.title}>{account}</h1>}
-
-                        <Image
-                            src="https://ipfs.io/ipfs/bafkreidahjp3fnwpu2zvydvy4imm7wktwy2a4a3ypjxno3hdwn4x5iao3e"
-                            width={300}
-                            height="100"
-                            alt="Qoddi Logo"
-                        />
-
-                        <button
-                            onClick={enableMetaMask}
-                            className="enableMetamask"
-                        >
-                            Connect To MetaMask To Mint NFT of Qoddi Logo
-                        </button>
+                        {account ? (
+                            <h1 className={styles.title}>{account}</h1>
+                        ) : (
+                            <button
+                                onClick={connectMetamask}
+                                className="enableMetamask"
+                            >
+                                Connect To MetaMask To Mint NFT of Qoddi Logo
+                            </button>
+                        )}
+                        <>
+                            <Image
+                                src="https://ipfs.io/ipfs/bafkreiazglfpx6bfnnobnkymqrwuq2c2gdkh5tunp2eusa4m64mv75j3ti"
+                                width={300}
+                                height="100"
+                                alt="Qoddi Logo"
+                            />
+                            <button onClick={mintNFT}>
+                                Mint NFT - Qoddi Logo
+                            </button>
+                        </>
                     </>
                 ) : (
-                    <h3>Metamask not installed in your browser</h3>
+                    <h3>Metamask not Connected</h3>
                 )}
             </main>
 

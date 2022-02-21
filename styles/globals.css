@@ -28,6 +28,7 @@ span {
     border: 1px rgb(8, 31, 104) solid;
     cursor: pointer;
 }
+button,
 .enableMetamask {
     font-size: large;
     background-color: #4c89af;
