@@ -46,24 +46,25 @@ export default function Home() {
 
     const mintNFT = async () => {
         try {
-            const response = await fetch(
-                "http://carpulqbzm.us10.qoddiapp.com/mint-nft",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        account,
-                    }),
-                }
-            );
+            const response = await fetch("http://localhost:5001/mint-nft", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    account,
+                }),
+            });
             const data = await response.json();
-            setToken(data.txId);
-            setMessage(
-                `Minted NFT with token ID: ${data.txId}, account: ${account}`
-            );
             console.log(data);
+            const metamask = await ethereum.request({
+                method: "eth_sendTransaction",
+                params: [data],
+            });
+
+            console.log(metamask);
+
+            setMessage(`Minted NFT details: `, metamask);
         } catch (e) {
             console.log(e);
         }
@@ -88,7 +89,7 @@ export default function Home() {
                 ) : metaMaskInstalled ? (
                     <>
                         {account ? (
-                            <h1 className={styles.title}>{account}</h1>
+                            <p className={styles.description}>{account}</p>
                         ) : (
                             <button
                                 onClick={connectMetamask}
