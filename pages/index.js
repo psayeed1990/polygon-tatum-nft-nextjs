@@ -46,15 +46,18 @@ export default function Home() {
 
     const mintNFT = async () => {
         try {
-            const response = await fetch("http://localhost:5001/mint-nft", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    account,
-                }),
-            });
+            const response = await fetch(
+                "http://carpulqbzm.us10.qoddiapp.com/mint-nft",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        account,
+                    }),
+                }
+            );
             const data = await response.json();
             console.log(data);
             const metamask = await ethereum.request({
